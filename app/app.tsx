@@ -10,14 +10,14 @@ import { Web3Provider } from "@/hooks/use_web3";
 
 export default function App({ children }: { children: React.ReactNode }) {
   const { currentChain } = useConnection();
-  const chains = useChains();
+  const {chains} = useChains();
 
   const chainId = React.useMemo(() => currentChain.id || 1, [currentChain.id]);
   const rpcUrls = React.useMemo(
     () =>
-      chains.chains.find((e) => e.id === currentChain.id)?.metamask.rpcUrls ||
+      (chains ?? []).find((e) => e.id === currentChain.id)?.metamask.rpcUrls ||
       [],
-    [chainId, chains.chains],
+    [chainId, chains],
   );
 
   const [mounted, setMounted] = React.useState(false);

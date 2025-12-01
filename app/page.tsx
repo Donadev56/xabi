@@ -164,7 +164,11 @@ export default function Home() {
 
   const getContractData = async () => {
     try {
+      
       setError(null);
+      if (!address.trim()) {
+        return 
+      }
       if (!validateAddress(address)) {
         throw new Error("Invalid contract address");
       }
@@ -411,11 +415,11 @@ export default function Home() {
                               tokenAmounts
                                 .map(
                                   (e) =>
-                                    (Number(e.amount) / e.decimals) *
+                                    (Number(e.amount) / 10 ** e.decimals ) *
                                     Number(e.priceUSD ?? "0"),
                                 )
                                 .reduce((prev, current) => prev + current, 0)
-                            )}{" "}
+                            ).toLocaleString()}{" "}
                             <span className="text-muted-foreground">
                               ({tokenAmounts.length}) tokens
                             </span>
