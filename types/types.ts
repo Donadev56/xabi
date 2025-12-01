@@ -44,3 +44,14 @@ export interface ABIFunction extends ABIBase {
   outputs?: ABIParameter[];
   stateMutability: "pure" | "view" | "nonpayable" | "payable";
 }
+
+export type ContractMetadata = {
+  address: string;
+  chainId: number;
+  creatorAddress: string;
+  txHash: string;
+  blockNumber: string;
+  timestamp: string;
+  ownerAddress: string;
+  balance: string;
+};
