@@ -51,16 +51,18 @@ import { ZeroDialogContent } from "./numbers_dialog_content";
 
 export const FunctionStateCard = ({
   f,
-  contract,
   account,
-  web3,
+  rpcUrl,
   currentChain,
+  functions,
+  address,
 }: {
   f: ABIFunction;
-  contract: Contract<any>;
   account: string;
-  web3: Web3;
+  rpcUrl: string;
   currentChain: ExtendedChain;
+  functions: ABIFunction[];
+  address: string;
 }) => {
   const isReadOnly =
     f.stateMutability === "view" || f.stateMutability === "pure";
@@ -83,6 +85,12 @@ export const FunctionStateCard = ({
   );
   const [payableValue, setPayableValue] = React.useState<string>("0");
   const [hash, setHash] = React.useState<string | null>(null);
+  const web3 = React.useMemo(() => {
+    return new Web3(rpcUrl);
+  }, [rpcUrl]);
+  const contract = React.useMemo(() => {
+    return new web3.eth.Contract(functions, address);
+  }, [web3, functions, address]);
 
   const stateMutabilityColors = {
     view: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
@@ -127,6 +135,7 @@ export const FunctionStateCard = ({
       const data = contract.methods[f.name](
         ...Object.values(inputValues),
       ).encodeABI();
+      const web3 = new Web3(rpcUrl);
       const signer = new TransactionSigner(web3);
 
       const res = await signer.signAndSendTransaction({

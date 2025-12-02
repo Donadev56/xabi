@@ -125,20 +125,20 @@ const SideBarComponent = ({
       icon: FaPenNib,
     },
   ];
-  const listenToChange = () => {
-    if (typeof window !== "undefined") {
-      window.addEventListener("storage", (e) => {
-        if (e.key === UserProjectLocalStorageKey) {
-          setProjects(GetProjects());
-        }
-      });
-    }
+  const handleStorageChange = (_: StorageEvent) => {
+      setProjects(GetProjects());
   };
+
   React.useEffect(() => {
     if (typeof window !== "undefined") {
-      listenToChange();
+      window.addEventListener("storage", handleStorageChange);
     }
-    return () => typeof window !== "undefined" ?  window.removeEventListener("storage", listenToChange) : undefined;
+
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("storage", handleStorageChange);
+      }
+    };
   }, []);
 
   return (
@@ -153,14 +153,14 @@ const SideBarComponent = ({
 
       <div
         className={cn(
-          "min-w-[270px] max-h-  pr-0 opacity-100  overflow-hidden  transition-[10s]  max-w-[270px] h-svh ",
+          "min-w-[270px] max-h-  pr-0 opacity-100  overflow-hidden  transition-[10s]  max-w-[270px] max-h-svh h-svh ",
           !isOpen && "w-0 min-w-0 opacity-0 p-0 ",
           isMobile && "fixed left-0 z-1000",
         )}
       >
         <div
           className={cn(
-            "h-svh p-3 border-r w-full bg-card",
+            "h-svh p-3 max-h-svh overflow-y-scroll border-r w-full bg-card",
             !isOpen && "w-0 min-w-0 p-0  ",
           )}
         >
@@ -212,11 +212,15 @@ const SideBarComponent = ({
               </div>
             </div>
             <div className="w-full">
-              <div className="w-full font-bold  text-sm text-muted-foreground">
+              <div className="w-full font-bold =text-sm text-muted-foreground">
                 PROJECTS
               </div>
-              <div className="flex gap-3  my-3 flex-col">
-                {projects
+              <div className="flex-1 overflow-y-auto flex flex-col gap-3 my-3 pb-30">
+                {projects.length ===  0 ? 
+                <div className="w-full border border-dashed p-3 rounded-[5px] text-muted-foreground text-center ">
+                  No Saved Projects
+                </div> :
+                projects
                   .sort((a, b) => b.created_at - a.created_at)
                   .map((e) => {
                     const chain = chains.find((p) => p.id === e.chainId);

@@ -102,6 +102,7 @@ export function ContractInteractorMain() {
   const [addProjectNameInputValue, setAddProjectNameInputValue] =
     React.useState("");
 
+
   React.useEffect(() => {
     const chainId = searchParams.get("chainId");
     const address = searchParams.get("address");
@@ -128,8 +129,10 @@ export function ContractInteractorMain() {
     }
   }, [searchParams]);
 
-  function showAddProjectDialog () {
-  const projects = GetProjects();
+
+
+  function showAddProjectDialog() {
+    const projects = GetProjects();
     const projectExist = projects.find(
       (e) =>
         e.address.trim().toLowerCase() === address.trim().toLowerCase() &&
@@ -141,13 +144,10 @@ export function ContractInteractorMain() {
     }
   }
 
-
-
   const provider = useWeb3();
-
-  const web3 = React.useMemo(() => {
+  const rpcUrl = React.useMemo(() => {
     const rpc = provider.availableRpc;
-    let validRpc = rpc
+    let validRpc = rpc;
     const connectedChainRpcUrls = connection?.currentChain?.metamask?.rpcUrls;
     if (
       connectedChainRpcUrls &&
@@ -162,18 +162,14 @@ export function ContractInteractorMain() {
         provider.availableRpc,
       );
       provider.getAvailableRpc();
-      validRpc = connectedChainRpcUrls[0]
+      validRpc = connectedChainRpcUrls[0];
     }
-    console.log({validRpc})
-    return new Web3(validRpc);
-  }, [provider.availableRpc,connection.currentChain.id]);
-
-  const contract = React.useMemo(() => {
-    if (!validateAddress(address)) {
-      return new web3.eth.Contract(functions as any, ZeroAddress);
-    }
-    return new web3.eth.Contract(functions as any, address);
-  }, [address, functions, web3]);
+    console.log({ validRpc });
+    return validRpc;
+  }, [provider.availableRpc, connection.currentChain.id]);
+  const web3 = React.useMemo(() => {
+    return new Web3(rpcUrl);
+  }, [provider.availableRpc, connection.currentChain.id]);
 
   React.useEffect(() => {
     localStorage.setItem(contractKey, address);
@@ -537,26 +533,24 @@ export function ContractInteractorMain() {
                   </Dialog>
                 </div>
                 <div className="flex items-center gap-2 my-3">
-                     <Button
-                  size="sm"
-                  onClick={() =>showAddProjectDialog}
-                  className="gap-2"
-                >
-                  <SaveIcon className="h-4 w-4" />
-                 Save Project
-                </Button>
- <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => ExploreAddress(currentChain.id, address)}
-                  className="gap-2"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  View Source
-                </Button>
-              
+                  <Button
+                    size="sm"
+                    onClick={showAddProjectDialog}
+                    className="gap-2"
+                  >
+                    <SaveIcon className="h-4 w-4" />
+                    Save Project
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => ExploreAddress(currentChain.id, address)}
+                    className="gap-2"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    View Source
+                  </Button>
                 </div>
-               
               </div>
             </CardHeader>
           </Card>
@@ -593,9 +587,10 @@ export function ContractInteractorMain() {
                       <FunctionStateCard
                         key={`${f.name}-${index}`}
                         f={f}
-                        contract={contract}
+                        functions={functions}
+                        rpcUrl={rpcUrl}
+                        address={address}
                         account={provider.account}
-                        web3={web3}
                         currentChain={currentChain}
                       />
                     ))

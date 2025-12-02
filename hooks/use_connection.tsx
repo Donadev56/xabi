@@ -29,17 +29,17 @@ export const ConnectionProvider: React.FC<{ children: ReactNode }> = ({
   const [currentChain, setCurrentChain] = React.useState<ExtendedChain>(
     Ethereum as any,
   );
-  const key = "saved-chain-id";
   const chains = useChains();
   const chainList = useMemo(() => chains.chains, [chains]);
   const [recentlyUsed, setRecentlyUsed] = React.useState<number[]>([]);
   const usedKey = "recently-used-chains";
 
-  React.useEffect(() => {
-    getSavedChainId();
-  }, [chains.chains]);
+  //React.useEffect(() => {
+  //  getSavedChainId();
+  // }, [chains.chains]);
 
   const changeChain = (id: number) => {
+    /*
     if (typeof localStorage !== "undefined") {
       const savedChains = getSavedUsedChain();
       localStorage.setItem(key, String(id));
@@ -51,7 +51,7 @@ export const ConnectionProvider: React.FC<{ children: ReactNode }> = ({
             : [...savedChains, id],
         ),
       );
-    }
+    }*/
     const targetChain = chainList.find((c) => c.id === id);
     if (!targetChain) {
       console.error("Chain Id not found");
@@ -59,7 +59,7 @@ export const ConnectionProvider: React.FC<{ children: ReactNode }> = ({
     }
     setCurrentChain(targetChain);
   };
-
+  /*
   function getSavedChainId() {
     let id: number = 1;
 
@@ -74,7 +74,7 @@ export const ConnectionProvider: React.FC<{ children: ReactNode }> = ({
       return;
     }
     setCurrentChain(targetChain);
-  }
+  } */
   function getSavedUsedChain() {
     let chains: number[] = [];
     if (typeof localStorage !== "undefined") {
