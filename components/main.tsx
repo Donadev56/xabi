@@ -137,16 +137,8 @@ export function ContractInteractorMain() {
 
 
   function showAddProjectDialog() {
-    const projects = GetProjects();
-    const projectExist = projects.find(
-      (e) =>
-        e.address.trim().toLowerCase() === address.trim().toLowerCase() &&
-        e.chainId === currentChain.id,
-    );
-    if (!projectExist) {
       setAddProjectDialogOpen(true);
       setAddProjectNameInputValue(source?.ContractName ?? "");
-    }
   }
 
   const provider = useWeb3();
