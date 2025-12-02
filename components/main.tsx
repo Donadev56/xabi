@@ -293,13 +293,7 @@ export function ContractInteractorMain() {
 
   function saveProject() {
     try {
-      const projects = GetProjects();
-      const projectExist = projects.find(
-        (e) =>
-          e.address.trim().toLowerCase() === address.trim().toLowerCase() &&
-          e.chainId === currentChain.id,
-      );
-      if (!projectExist) {
+      let projects = GetProjects();
         const project: Project = {
           address,
           chainId: currentChain.id,
@@ -310,13 +304,13 @@ export function ContractInteractorMain() {
             source?.ContractName ||
             `Project-${projects.length}`,
         };
+        projects = projects.filter((e)=> e.address?.trim()?.toLowerCase() !== address?.trim()?.toLowerCase() && e.chainId !== currentChain.id)
         localStorage.setItem(
           UserProjectLocalStorageKey,
           JSON.stringify([...projects, project]),
         );
         toast.success("Project saved successfully");
         setAddProjectDialogOpen(false);
-      }
     } catch (error) {
       console.error(error);
       toast.error((error as any)?.message ?? String(error));
