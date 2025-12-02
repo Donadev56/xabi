@@ -89,7 +89,6 @@ export const Web3Provider = ({
         params: [{ chainId: `0x${chainId.toString(16)}` }],
       });
       console.log({ changeNetworkResponse: response });
-      connection.setCurrentChain(chainId);
     }
   }, [chainId]);
 

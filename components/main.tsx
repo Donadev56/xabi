@@ -15,7 +15,7 @@ import {
   Project,
 } from "@/types/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { IoReload, IoCopy, IoWallet } from "react-icons/io5";
+import { IoReload, IoCopy, IoWallet, IoFlash } from "react-icons/io5";
 import {
   BookOpen,
   ExternalLink,
@@ -86,6 +86,7 @@ export function ContractInteractorMain() {
   const [address, setAddress] = React.useState(
     () => localStorage.getItem("contract-address") ?? "",
   );
+  const [loadingContract, setLoadingContract] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null);
   const [functions, setFunctions] = React.useState<ABIFunction[]>([]);
   const connection = useConnection();
@@ -101,6 +102,7 @@ export function ContractInteractorMain() {
   const [addProjectDialogOpen, setAddProjectDialogOpen] = React.useState(false);
   const [addProjectNameInputValue, setAddProjectNameInputValue] =
     React.useState("");
+    console.log({currentChain})
 
 
   React.useEffect(() => {
@@ -121,7 +123,7 @@ export function ContractInteractorMain() {
         setFunctions(targetProject.abi);
       }
     }
-  }, [searchParams]);
+  }, [searchParams, chains]);
 
   function getSavedProjectInfo  (address :string ,chainId:number) {
       const projects: Project[] = GetProjects();
@@ -175,7 +177,7 @@ export function ContractInteractorMain() {
   React.useEffect(() => {
     getContractDataWithToast();
     getTokenAmounts();
-  }, [address, currentChain]);
+  }, [address, currentChain, chains]);
 
   const functionsStates = React.useMemo(() => {
     return [
@@ -237,6 +239,7 @@ export function ContractInteractorMain() {
   const getContractData = async () => {
     try {
       setError(null);
+      setLoadingContract(true)
       if (!address.trim()) {
         return;
       }
@@ -268,10 +271,14 @@ export function ContractInteractorMain() {
       if (metadata) {
         setContractMetadata(metadata);
       }
+      setError(null);
+
     } catch (error) {
       const err = (error as any)?.message || String(error);
       setError(err);
       toast.error("Failed to fetch contract data", { description: err });
+    } finally {
+      setLoadingContract(false)
     }
   };
 
@@ -425,7 +432,9 @@ export function ContractInteractorMain() {
                 className="w-full"
                 size="lg"
               >
-                Load Contract
+             {!loadingContract ?  <>
+             <IoFlash /> Load Contract</> : <>
+             <Spinner/> Loading...</>}
               </Button>
             </CardContent>
           </Card>
