@@ -29,6 +29,7 @@ export interface web3ContextType {
   rpcUrls: string[];
   availableRpc: string;
   setAvailableRpc: (rpc: string) => void;
+  getAvailableRpc: () => void;
 }
 
 const Web3Context = createContext<web3ContextType | undefined>(undefined);
@@ -165,25 +166,35 @@ export const Web3Provider = ({
 
       if (rpcUrls?.length == 1) {
         setAvailableRpc(rpcUrls[0]);
+        return;
       }
-      for (const rpc of rpcUrls) {
-        const isAvailable = await Web3Utils.isRpcUrlAvailable(rpc);
-        if (isAvailable) {
-          setAvailableRpc(rpc);
-          break;
+
+      try {
+        for (const rpc of rpcUrls) {
+          const isAvailable = await Web3Utils.isRpcUrlAvailable(rpc);
+          if (isAvailable) {
+            setAvailableRpc(rpc);
+            break;
+          }
         }
+      } catch (error) {
+        console.error(error);
+        setAvailableRpc(rpcUrls[0]);
       }
+
       if (availableRpc.length === 0) {
         setAvailableRpc(rpcUrls[0] || "");
       }
     } catch (error) {
       console.error(error);
+      setAvailableRpc(rpcUrls.length === 1 ? rpcUrls[0] : "");
     }
   }
 
   return (
     <Web3Context.Provider
       value={{
+        getAvailableRpc,
         setAvailableRpc,
         availableRpc,
         rpcUrls,

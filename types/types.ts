@@ -55,3 +55,11 @@ export type ContractMetadata = {
   ownerAddress: string;
   balance: string;
 };
+
+export type Project = {
+  name: string;
+  created_at: number;
+  address: string;
+  chainId: number;
+  abi: any[];
+};

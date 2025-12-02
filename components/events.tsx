@@ -1,4 +1,3 @@
-
 /*
 const ContractEventsView = ({contract, web3}:{contract : Contract<any>, web3 : Web3})=> {
   const [contractEvents , setContractEvents] = React.useState<EventLog[]>([])

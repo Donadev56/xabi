@@ -91,7 +91,10 @@ export const TokensDialogContent = ({
                     title={<div>{token.name}</div>}
                     actions={[
                       <div className="group-hover:opacity-100 text-muted-foreground transition-all">
-                        {((Number(token.amount ?? "0"))/10 ** token.decimals).toLocaleString()}
+                        {(
+                          Number(token.amount ?? "0") /
+                          10 ** token.decimals
+                        ).toLocaleString()}
                       </div>,
                     ]}
                   />

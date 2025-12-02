@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { ContractSourceCode } from "@/types/types.js";
+import { ContractSourceCode, Project } from "@/types/types.js";
 import { ZeroAddress } from "ethers";
 import { getChains } from "@lifi/sdk";
 
@@ -69,6 +69,14 @@ export class Web3Utils {
       params: [],
     })) as any as string[] | undefined;
   }
+  static isValidUrl(urlString: string): boolean {
+    try {
+      const url = new URL(urlString);
+      return url.protocol === "http:" || url.protocol === "https:";
+    } catch {
+      return false;
+    }
+  }
 }
 
 export function ImageOf(chainId: number) {
@@ -129,6 +137,18 @@ export async function imageToBase64(file: File) {
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
   });
+}
+export function SplitCamelCase(str: string) {
+  if (!str.trim()) {
+    return str;
+  }
+  str = str.replaceAll("_", " ");
+  const spaced = str.replace(/([a-z])([A-Z])/g, "$1 $2");
+
+  return spaced[0]?.toUpperCase() + spaced.slice(1).toLowerCase();
+  // add space before capital letters
+  const capitalized = spaced.replace(/\b\w/g, (char) => char.toUpperCase()); // capitalize each word
+  return capitalized;
 }
 
 export const Ethereum = {
@@ -195,4 +215,13 @@ export async function ExploreTx(chainId: number, hash: string) {
   }
   const url = `${explorerUrl.replace(/\/+$/, "")}/tx/${hash}`;
   open(url, "_blank");
+}
+
+export const UserProjectLocalStorageKey =
+  "user-xAbi-smart-contract-projects-key";
+export function GetProjects() {
+  const projects: Project[] = JSON.parse(
+    localStorage.getItem(UserProjectLocalStorageKey) ?? "[]",
+  );
+  return projects;
 }

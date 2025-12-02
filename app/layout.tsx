@@ -19,8 +19,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "xABI",
-  description: "Explore, read, and write to Ethereum smart contracts with an intuitive interface",
-  
+  description:
+    "Explore, read, and write to Ethereum smart contracts with an intuitive interface",
 };
 
 export default function RootLayout({

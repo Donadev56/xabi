@@ -62,7 +62,7 @@ export class ApiRequestManager {
         continue;
       }
       tokenAmounts.push({ ...token, amount: balance });
-      console.log({tokenAmounts})
+      console.log({ tokenAmounts });
     }
     return tokenAmounts;
   }

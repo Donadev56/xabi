@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ABIFunction, ContractSourceCode } from "@/types/types";
-import { IoReload, IoCopy, IoWallet } from "react-icons/io5";
+import { IoReload, IoCopy, IoWallet, IoAdd } from "react-icons/io5";
 import {
   BookOpen,
   ExternalLink,
@@ -26,7 +26,12 @@ import { Blur, Scale } from "@/components/ui/transitions";
 import { motion } from "framer-motion";
 import useWeb3 from "@/hooks/use_web3";
 import TransactionSigner from "@/lib/signer";
-import { ExploreAddress, ExploreTx, Web3Utils } from "@/lib/utils";
+import {
+  ExploreAddress,
+  ExploreTx,
+  SplitCamelCase,
+  Web3Utils,
+} from "@/lib/utils";
 import { copy } from "@/lib/app-utils";
 import Link from "next/link";
 import { ZeroAddress } from "ethers";
@@ -41,6 +46,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { ZeroDialogContent } from "./numbers_dialog_content";
 
 export const FunctionStateCard = ({
   f,
@@ -169,11 +176,13 @@ export const FunctionStateCard = ({
   }, []);
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className="overflow-hidden  hover:shadow-lg transition-shadow">
       <CardHeader className="">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <CardTitle className="text-lg font-mono">{f.name}</CardTitle>
+            <CardTitle className="text-lg truncate max-w-full font-mono">
+              {SplitCamelCase(f.name)}
+            </CardTitle>
             <div className="flex items-center gap-2">
               <Badge
                 variant="outline"
@@ -202,8 +211,8 @@ export const FunctionStateCard = ({
 
       <CardContent className="space-y-3 ">
         {/* Inputs Section */}
-        <Scale displayWhen={containsInput || !isReadOnly }>
-            <div className="space-y-3">
+        <Scale displayWhen={containsInput || !isReadOnly}>
+          <div className="space-y-3">
             <Label className="text-sm font-medium">Inputs</Label>
             {isPayable && (
               <div className="space-y-2">
@@ -219,26 +228,58 @@ export const FunctionStateCard = ({
                 />
               </div>
             )}
-            {f.inputs.map((input, index) => (
-              <div key={index} className="space-y-2">
-                <Input
-                  id={input.name}
-                  value={inputValues[input.name || `param_${index}`]}
-                  onChange={(e) => {
-                    setInputValues({
-                      ...inputValues,
-                      [input.name || `param_${index}`]: e.target.value,
-                    });
-                  }}
-                  placeholder={`Enter ${input.type}`}
-                  className="font-mono text-sm"
-                />
-              </div>
-            ))}
-          </div>
+            {f.inputs.map((input, index) => {
+              const isNumber = input.type.startsWith("uint");
+              return (
+                <div key={index} className="relative">
+                  <Input
+                    id={input.name}
+                    value={inputValues[input.name || `param_${index}`]}
+                    onChange={(e) => {
+                      setInputValues({
+                        ...inputValues,
+                        [input.name || `param_${index}`]: e.target.value,
+                      });
+                    }}
+                    placeholder={`Enter ${input.type}`}
+                    className="font-mono text-sm"
+                  />
+                  <Dialog>
+                    <DialogTrigger>
+                      <Blur
+                        displayWhen={isNumber}
+                        className="absolute  right-0 bottom-[5%] "
+                      >
+                        <Button className="p-0 w-8 h-8">
+                          <IoAdd />
+                        </Button>
+                      </Blur>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <ZeroDialogContent
+                        onClick={(zeros) => {
+                          const value =
+                            inputValues[input.name || `param_${index}`];
+                          let newValue = "";
+                          if (!value || value.trim().length === 0) {
+                            newValue = zeros.value;
+                          } else {
+                            newValue = value + zeros.value.slice(1);
+                          }
 
+                          setInputValues({
+                            ...inputValues,
+                            [input.name || `param_${index}`]: newValue,
+                          });
+                        }}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              );
+            })}
+          </div>
         </Scale>
-      
 
         {/* Result Display */}
         <div className="space-y-2">
