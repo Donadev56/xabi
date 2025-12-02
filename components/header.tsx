@@ -5,6 +5,9 @@ import { copy } from "@/lib/app-utils";
 import { Web3Utils } from "@/lib/utils";
 import useWeb3 from "@/hooks/use_web3";
 import { Logo } from "./logo";
+import Link from "next/link";
+import { Button } from "./ui/button";
+import { FaGithub } from "react-icons/fa";
 
 export const AppHeader = () => {
   const provider = useWeb3();
@@ -16,7 +19,13 @@ export const AppHeader = () => {
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="ml-3">
+         <Link href={"https://github.com/Donadev56/xabi"}>
+                <Button className="rounded-full ml-3 border  w-8 h-8 " variant={"ghost"}>
+                  <FaGithub />
+                </Button>
+                 </Link>
+
+        <div className="">
           <ThemeToggle size={30} />
         </div>
 
@@ -24,10 +33,10 @@ export const AppHeader = () => {
           <div className="flex items-center gap-3">
             <Wallet className="h-4 w-4 text-muted-foreground" />
             <span
-              className="cursor-pointer font-mono text-sm hover:text-primary transition-colors"
+              className="cursor-pointer text-[13px] md:text-[15px] font-mono text-sm hover:text-primary transition-colors"
               onClick={() => copy(provider.account)}
             >
-              {Web3Utils.truncatedAddress(provider.account)}
+              {Web3Utils.truncatedAddress(provider.account, 4)}
             </span>
           </div>
         </Card>

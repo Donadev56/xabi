@@ -8,6 +8,7 @@ import { useChains } from "@/hooks/use_chains";
 import { useConnection } from "@/hooks/use_connection";
 import { Web3Provider } from "@/hooks/use_web3";
 import { LoaderView } from "@/components/loader_view";
+import { ProjectsProviderProvider } from "@/hooks/use_projects";
 
 export default function App({ children }: { children: React.ReactNode }) {
   const { currentChain } = useConnection();
@@ -35,7 +36,9 @@ export default function App({ children }: { children: React.ReactNode }) {
   return (
     <Suspense>
       <Web3Provider rpcUrls={rpcUrls} chainId={chainId}>
+        <ProjectsProviderProvider>
         {children}
+        </ProjectsProviderProvider>
       </Web3Provider>
     </Suspense>
   );

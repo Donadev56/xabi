@@ -62,4 +62,5 @@ export type Project = {
   address: string;
   chainId: number;
   abi: any[];
+  id:string
 };

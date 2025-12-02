@@ -221,7 +221,7 @@ export async function ExploreTx(chainId: number, hash: string) {
 }
 
 export const UserProjectLocalStorageKey =
-  "user-xAbi-smart-contract-projects-key";
+  "user-evm-xAbi-smart-contract-projects-key";
 export function GetProjects() {
   const projects: Project[] = JSON.parse(
     localStorage.getItem(UserProjectLocalStorageKey) ?? "[]",

@@ -19,6 +19,7 @@ import {
   HomeIcon,
   LayoutDashboard,
   MoreHorizontal,
+  Trash2,
   Wallet,
 } from "lucide-react";
 import React from "react";
@@ -35,6 +36,8 @@ import { StTokenAbi } from "@/contracts/abi/token_abi";
 import { LoaderView } from "./loader_view";
 import { useChains } from "@/hooks/use_chains";
 import { CryptoAvatar } from "./ui/crypto_avatar";
+import { useProjects } from "@/hooks/use_projects";
+import { FaGithub } from "react-icons/fa";
 
 const SideBarApp = ({
   children,
@@ -100,8 +103,9 @@ const SideBarComponent = ({
   setIsOpen: (open: boolean) => void;
   isMobile: boolean;
 }) => {
-  const [projects, setProjects] = React.useState(() => GetProjects());
   const { chains } = useChains();
+  const {projects, relaodProjects, deleteProject} = useProjects()
+  
 
   const options = [
     {
@@ -126,7 +130,7 @@ const SideBarComponent = ({
     },
   ];
   const handleStorageChange = (_: StorageEvent) => {
-      setProjects(GetProjects());
+      relaodProjects();
   };
 
   React.useEffect(() => {
@@ -170,7 +174,15 @@ const SideBarComponent = ({
               leading={<Logo />}
               title={<div className="font-bold text-md  ">xABI</div>}
               subTitle={label}
-              actions={[<ThemeToggle size={30} />]}
+              actions={[
+                <Link href={"https://github.com/Donadev56/xabi"}>
+                <Button className="rounded-full border  w-8 h-8 " variant={"ghost"}>
+                  <FaGithub />
+                </Button>
+                 </Link>
+
+                ,
+              <ThemeToggle size={30} />]}
             />
           </div>
           <div className="px-4 flex gap-2 flex-col items-center ">
@@ -230,7 +242,7 @@ const SideBarComponent = ({
                         className="w-full"
                       >
                         <StListTitle
-                          className="border py-1 bg-muted rounded-[5px] "
+                          className="border group  py-1 bg-muted rounded-[5px] "
                           leading={
                             <CryptoAvatar
                               size={32}
@@ -247,7 +259,12 @@ const SideBarComponent = ({
                             <div>
                               {Web3Utils.truncatedAddress(e.address, 5)}
                             </div>
+                            
                           }
+
+                          actions={[
+                            <Trash2 onClick={()=> deleteProject(e.id)} className={cn("hover:text-red-400 ", !isMobile && "opacity-0", "group-hover:opacity-100")} size={17} />
+                          ]}
                         />
                       </Link>
                     );

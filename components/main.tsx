@@ -80,6 +80,7 @@ import { TokensDialogContent } from "@/components/tokens_dialog_content";
 import { useParams, useSearchParams } from "next/navigation";
 import { AddProjectDialog } from "./add_project_dialog";
 import { MdSaveAlt } from "react-icons/md";
+import { useProjects } from "@/hooks/use_projects";
 
 export function ContractInteractorMain() {
   const contractKey = "contract-address";
@@ -103,6 +104,7 @@ export function ContractInteractorMain() {
   const [addProjectNameInputValue, setAddProjectNameInputValue] =
     React.useState("");
     console.log({currentChain})
+  const {relaodProjects, saveProjects} = useProjects()
 
 
   React.useEffect(() => {
@@ -307,12 +309,11 @@ export function ContractInteractorMain() {
             addProjectNameInputValue ||
             source?.ContractName ||
             `Project-${projects.length}`,
+          id:`${address}-${currentChain.id}`
         };
-        projects = projects.filter((e)=> e.address?.trim()?.toLowerCase() !== address?.trim()?.toLowerCase() && e.chainId !== currentChain.id)
-        localStorage.setItem(
-          UserProjectLocalStorageKey,
-          JSON.stringify([...projects, project]),
-        );
+        const filteredProjects = projects.filter((e)=>( e.id !== project.id))
+        saveProjects([...filteredProjects, project])
+        relaodProjects()
         toast.success("Project saved successfully");
         setAddProjectDialogOpen(false);
     } catch (error) {
