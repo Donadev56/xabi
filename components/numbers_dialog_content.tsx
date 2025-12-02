@@ -67,7 +67,7 @@ export const ZeroDialogContent = ({
     <DialogContent className="sm:max-w-md  w-full overflow-x-hidden">
       <div className="space-y-4">
         <div>
-          <h2 className="text-lg font-semibold">Add Add Zeroes</h2>
+          <h2 className="text-lg font-semibold">Add Zeroes</h2>
           <p className="text-sm text-muted-foreground">
             Select the number of zeroes to add.
           </p>

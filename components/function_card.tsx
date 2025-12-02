@@ -238,7 +238,7 @@ export const FunctionStateCard = ({
               </div>
             )}
             {f.inputs.map((input, index) => {
-              const isNumber = input.type.startsWith("uint");
+              const isNumber = input.type.startsWith("uint") && !input.type.endsWith("[]");
               return (
                 <div key={index} className="relative">
                   <Input
