@@ -177,7 +177,7 @@ export function ContractInteractorMain() {
   React.useEffect(() => {
     getContractDataWithToast();
     getTokenAmounts();
-  }, [address, currentChain, chains]);
+  }, [address, currentChain.id, chains]);
 
   const functionsStates = React.useMemo(() => {
     return [
@@ -256,7 +256,11 @@ export function ContractInteractorMain() {
       if (!source) {
         throw new Error("Source not found");
       }
-      const abi = JSON.parse(source.ABI);
+       if (!source?.ContractName?.trim()) {
+        throw new Error("Source not found");
+      }
+     
+      const abi = JSON.parse(source.ABI ?? "[]");
       const funcs = abi.filter((e: any) => e.type === "function");
       const targetProject = getSavedProjectInfo(address, currentChain.id)
       if (targetProject) {
@@ -275,6 +279,7 @@ export function ContractInteractorMain() {
 
     } catch (error) {
       const err = (error as any)?.message || String(error);
+      console.error(error)
       setError(err);
       toast.error("Failed to fetch contract data", { description: err });
     } finally {
