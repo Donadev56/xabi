@@ -139,7 +139,10 @@ export async function imageToBase64(file: File) {
   });
 }
 export function SplitCamelCase(str: string) {
-  if (!str.trim()) {
+  if (!str) {
+   return "No name"
+  }
+  if (!str?.trim()) {
     return str;
   }
   str = str.replaceAll("_", " ");

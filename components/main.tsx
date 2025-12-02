@@ -116,18 +116,23 @@ export function ContractInteractorMain() {
 
     if (address && Web3Utils.isAddressValid(address)) {
       setAddress(address);
-      const projects: Project[] = GetProjects();
-      const targetProject = projects.find(
-        (e) =>
-          e.address.trim().toLowerCase() === address.trim().toLowerCase() &&
-          (e.chainId === Number(chainId ?? "0") ||
-            e.chainId === currentChain.id),
-      );
+       const targetProject = getSavedProjectInfo(address, Number(chainId ?? "0")) 
       if (targetProject) {
         setFunctions(targetProject.abi);
       }
     }
   }, [searchParams]);
+
+  function getSavedProjectInfo  (address :string ,chainId:number) {
+      const projects: Project[] = GetProjects();
+      const targetProject = projects.find(
+        (e) =>
+          e.address.trim().toLowerCase() === address.trim().toLowerCase() &&
+          (e.chainId === chainId||
+            e.chainId === currentChain.id),
+      );
+        return (targetProject);
+  }
 
 
 
@@ -257,8 +262,13 @@ export function ContractInteractorMain() {
         throw new Error("Source not found");
       }
       const abi = JSON.parse(source.ABI);
-      const functions = abi.filter((e: any) => e.type === "function");
-      setFunctions(functions);
+      const funcs = abi.filter((e: any) => e.type === "function");
+      const targetProject = getSavedProjectInfo(address, currentChain.id)
+      if (targetProject) {
+        setFunctions(targetProject.abi)
+      } else {
+        setFunctions(funcs);
+      }
       const metadata = await manager.getContractMetadata(
         currentChain.id,
         address,
