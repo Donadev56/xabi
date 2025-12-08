@@ -54,7 +54,7 @@ import {
   UserProjectLocalStorageKey,
   Web3Utils,
 } from "@/lib/utils";
-import { copy } from "@/lib/app-utils";
+import { copy, Paste } from "@/lib/app-utils";
 import Link from "next/link";
 import { ZeroAddress } from "ethers";
 import { Textarea } from "@/components/ui/textarea";
@@ -71,7 +71,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { StListTitle } from "@/components/ui/st_list_title";
 import { CryptoAvatar } from "@/components/ui/crypto_avatar";
-import { FaFileAlt } from "react-icons/fa";
+import { FaFileAlt, FaPaste } from "react-icons/fa";
 import { ChainDialogContent } from "@/components/chain_dialog_content";
 import { FunctionStateCard } from "@/components/function_card";
 import { AppHeader } from "@/components/header";
@@ -81,6 +81,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { AddProjectDialog } from "./add_project_dialog";
 import { MdSaveAlt } from "react-icons/md";
 import { useProjects } from "@/hooks/use_projects";
+import { GoPaste } from "react-icons/go";
 
 export function ContractInteractorMain() {
   const contractKey = "contract-address";
@@ -182,33 +183,36 @@ export function ContractInteractorMain() {
   }, [address, currentChain.id, chains]);
 
   const functionsStates = React.useMemo(() => {
+    if (!functions) {
+      return []
+    }
     return [
       {
         name: "Read",
         value: "read-no-inputs",
-        functions: functions.filter(
+        functions: functions?.filter(
           (e) =>
             (e.inputs.length === 0 && e.stateMutability === "view") ||
             e.stateMutability === "pure",
-        ),
+        ) ?? [],
       },
       {
         name: "Read & Inputs",
         value: "read-with-inputs",
-        functions: functions.filter(
+        functions: functions?.filter(
           (e) =>
             (e.inputs.length > 0 && e.stateMutability === "view") ||
             e.stateMutability === "pure",
-        ),
+        ) ?? [],
       },
       {
         name: "Write",
         value: "write",
-        functions: functions.filter(
+        functions: functions?.filter(
           (e) =>
             e.stateMutability === "nonpayable" ||
             e.stateMutability === "payable",
-        ),
+        ) ?? [],
       },
     ];
   }, [functions]);
@@ -321,6 +325,16 @@ export function ContractInteractorMain() {
       toast.error((error as any)?.message ?? String(error));
     }
   }
+
+  const setAbi = (value : string) => {
+                        try {
+                          const parsed = JSON.parse(value);
+                          setFunctions(parsed);
+                        } catch (error) {
+                          console.log(error);
+                          toast.error((error as any)?.message ?? String(error));
+                        }
+                      }
   return (
     <div className="w-full flex flex-col items-center ">
       <div className="w-full max-w-6xl  flex justify-center  md:flex-row flex-col gap-2">
@@ -390,7 +404,26 @@ export function ContractInteractorMain() {
                   <Label className="text-sm font-medium">
                     Contract ABI (Optional)
                   </Label>
-                  <Button
+                  <div className="flex gap-1 items-center ">
+                   <Scale className="w-full" displayWhen={isABIVisible}>
+                            <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={async () => {
+                      setAbi(await Paste())
+
+                    }  }
+                    className="h-8 gap-2"
+                  >
+                
+                      <GoPaste className="h-4 w-4" />
+                 
+                  </Button>
+
+                   </Scale>
+                  
+
+                          <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setIsABIVisible(!isABIVisible)}
@@ -403,6 +436,9 @@ export function ContractInteractorMain() {
                     )}
                     {isABIVisible ? "Hide" : "Show"} ABI
                   </Button>
+
+                  </div>
+            
                 </div>
 
                 {isABIVisible && (
@@ -413,15 +449,7 @@ export function ContractInteractorMain() {
                   >
                     <Textarea
                       value={JSON.stringify(functions, null, 2)}
-                      onChange={(e) => {
-                        try {
-                          const parsed = JSON.parse(e.target.value);
-                          setFunctions(parsed);
-                        } catch (error) {
-                          console.log(error);
-                          toast.error((error as any)?.message ?? String(error));
-                        }
-                      }}
+                      onChange={(e)=> setAbi(e.target.value)}
                       placeholder="Paste your ABI here..."
                       className="max-h-20 font-mono text-sm"
                     />

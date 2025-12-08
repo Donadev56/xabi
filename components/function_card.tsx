@@ -250,7 +250,7 @@ export const FunctionStateCard = ({
                         [input.name || `param_${index}`]: e.target.value,
                       });
                     }}
-                    placeholder={`Enter ${input.type}`}
+                    placeholder={`${input.name || "Enter"} ${input.type}`}
                     className="font-mono text-sm"
                   />
                   <Dialog>
